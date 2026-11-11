@@ -18,6 +18,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .chip{font:600 11px 'JetBrains Mono';padding:5px 10px;border-radius:999px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);white-space:nowrap}
 .chip b{color:var(--accent)}
 main{max-width:720px;margin:0 auto;padding:16px 16px 24px}
+.mascot{display:flex;gap:14px;align-items:center}.mascot img{width:104px;height:auto;border-radius:14px;flex:none;border:1px solid var(--border)}.mascot .say{font-size:15px;line-height:1.45}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
 .card h2{font-size:17px;margin:0 0 6px}.card h3{font-size:14px;margin:0 0 6px}
 .muted{color:var(--muted);font-size:13px}.eyebrow{font:600 11px 'JetBrains Mono';text-transform:uppercase;letter-spacing:.07em;color:var(--accent)}
@@ -130,11 +131,11 @@ function mergeInto(a,b){
   Object.keys(b.log||{}).forEach(function(k){ var x=a.log[k], y=b.log[k]; if(!x){ a.log[k]=y; } else { Object.keys(y).forEach(function(f){ x[f]=Math.max(x[f]||0,y[f]||0); }); } });
   var seen={}; a.exams.forEach(function(e){ seen[e.t]=1; }); (b.exams||[]).forEach(function(e){ if(!seen[e.t]) a.exams.push(e); });
   if((b.rec||[]).length>a.rec.length) a.rec=b.rec;
-  a.ses=Math.max(a.ses||0,b.ses||0);
+  a.ses=Math.max(a.ses||0,b.ses||0); a.back=Math.max(a.back||0,b.back||0); a.rep=Math.max(a.rep||0,b.rep||0);
 }
 
 // ---------- spaced repetition
-function logAct(f,ok){ var k=String(today()); var l=S.log[k]||(S.log[k]={q:0,ok:0,c:0,d:0,s:0}); l[f]=(l[f]||0)+1; if(ok) l.ok=(l.ok||0)+1; }
+function logAct(f,ok){ var k=String(today()); if(!S.log[k]){ var g=gapDays(); if(g!==null&&g>=4) S.back=today(); } var l=S.log[k]||(S.log[k]={q:0,ok:0,c:0,d:0,s:0}); l[f]=(l[f]||0)+1; if(ok) l.ok=(l.ok||0)+1; }
 function recQ(id,ok,conf){
   var r=S.q[id], b;
   if(!r){ b=ok?(conf===0?1:2):0; } else if(ok){ b=Math.min(r.b+(conf===0?0:1),4); } else { b=0; }
@@ -171,6 +172,37 @@ function setBack(fn){ if(!tg||!tg.BackButton) return; try{ tg.BackButton.offClic
 function leave(){ if(E&&E.timer){ if(!confirm("Leave the exam? Your answers will be lost.")) return false; clearInterval(E.timer); E=null; } return true; }
 function go(t){ if(!leave()) return; run=null; setBack(null); tab=t; document.querySelectorAll("#nav button").forEach(function(b){ b.classList.toggle("on",b.dataset.tab===t); }); window.scrollTo(0,0); ({home:renderHome,practice:renderPractice,cards:renderCards,drills:renderDrills,progress:renderProgress})[t](); }
 function title(t){ $("#title").textContent=t; }
+function gapDays(){
+  var t=today(), last=null; Object.keys(S.log).forEach(function(k){ var n=Number(k); if(n<t&&(last===null||n>last)) last=n; });
+  return last===null?null:t-last;
+}
+var MASCOT={
+  calm:["calm.png","Your move today. I'm just sitting here. Politely."],
+  nervous:["nervous_start.png","Yesterday I waited too. It's fine. I don't mind. (I mind.)"],
+  playing_dead:["playing_dead_roll.png","I started playing dead. They say it works better than reminders. Does it?"],
+  dead_homeless:["dead_homeless_overview.png","I died. I'm lying on a cardboard box. Without the certification, we'll both end up here. One session and I rise."],
+  celebrate:["celebrate_main.png","Today counts. I never doubted you. (I doubted you a little.)"],
+  trophy:["trophy_crown.png","A streak! I'm moved. I'm not showing it."],
+  resurrect:["resurrect_burst.png","I'm back from the dead! I won't mention the missed days. I will remember them."],
+  hello:["calm.png","Hi, I'm Opossum. I'll sit here and watch your progress. Quietly."]
+};
+function mascotState(){
+  var t=today(), act=!!S.log[String(t)], st=streak(), g=gapDays();
+  if(S.back===t) return "resurrect";
+  if(act) return [3,5,7,14].indexOf(st)>-1?"trophy":"celebrate";
+  if(g===null) return "hello";
+  return ["calm","nervous","playing_dead","dead_homeless"][Math.max(0,Math.min(3,g-1))];
+}
+function canReport(){ return !!(tg&&tg.initData&&tg.sendData&&tg.initDataUnsafe&&!tg.initDataUnsafe.query_id); }
+function reportToBot(){
+  try{ S.rep=today(); flush(); tg.sendData(JSON.stringify({t:"act",streak:streak(),day:Math.min(S.ses||0,D.PLAN.length)})); }
+  catch(e){ toast("Open the app with the \ud83c\udf19 button at the bottom of the chat to tell Opossum."); }
+}
+function mascotHtml(){
+  var k=mascotState(), m=MASCOT[k], st=streak(), act=!!S.log[String(today())];
+  var btn=(act&&canReport()&&S.rep!==today())?'<button class="btn small" id="tellop" style="margin-top:8px">Tell Opossum in the chat (closes the app)</button>':"";
+  return '<div class="card mascot"><img src="opossum/'+m[0]+'" alt="Opossum" onerror="this.style.display=\'none\'"><div><div class="eyebrow">Opossum'+(st?' &middot; streak '+st:'')+'</div><div class="say">'+esc(m[1])+'</div>'+btn+'</div></div>';
+}
 function chipStreak(){ var s=streak(); $("#streak").innerHTML="streak <b>"+s+"</b>"; }
 document.getElementById("nav").addEventListener("click",function(e){ var b=e.target.closest("button"); if(b) go(b.dataset.tab); });
 
@@ -199,7 +231,7 @@ function renderHome(){
   if(viewDay===null) viewDay=Math.max(0,Math.min(pi,n-1));
   var idx=viewDay, p=D.PLAN[idx];
   var items=sessionFor(idx), rd=readiness(), dq=dueQ().length, dc=dueC().length;
-  var h='<div class="card"><div class="eyebrow">'+n+'-day plan</div>';
+  var h=mascotHtml()+'<div class="card"><div class="eyebrow">'+n+'-day plan</div>';
   h+='<h2>Day '+(idx+1)+' of '+n+(idx<pi?' &middot; done':'')+'</h2><div class="muted">'+esc(p.title)+'</div><div class="bar" style="margin-top:8px"><i style="width:'+Math.round(100*Math.min(pi,n)/n)+'%"></i></div><div class="muted" style="margin-top:4px">'+Math.min(pi,n)+' of '+n+' days done. No dates: take it at your own pace.</div>';
   h+='<div class="row" style="margin-top:10px"><button class="btn small ghost" id="dprev"'+(idx===0?" disabled":"")+'>&larr; Previous</button><button class="btn small ghost" id="dnext"'+(idx>=n-1?" disabled":"")+'>Next &rarr;</button>'+(idx!==pi&&pi<n?'<button class="btn small" id="dtoday">Go to my day</button>':"")+'</div></div>';
   if(p.videos&&p.videos.length){ h+='<div class="card"><h3>1. Watch</h3>'+p.videos.map(function(v){ return '<div class="item" style="cursor:default"><span>'+esc(v[0])+'</span><span class="muted">'+v[1]+' min</span></div>'; }).join("")+'<div class="muted" style="margin-top:6px">About '+Math.round(p.videos.reduce(function(a,v){ return a+v[1]; },0)/1.5)+' min at 1.5x.</div></div>'; }
@@ -215,6 +247,7 @@ function renderHome(){
   h+='<div class="card"><h3>Study notes</h3><div class="muted">Diagrams, comparison tables, limits and exam traps by topic.</div><a class="btn block" href="guide.html" style="margin-top:8px;text-align:center;text-decoration:none">Open the guide</a></div>';
   main.innerHTML=h;
   var b;
+  if((b=$("#tellop"))) b.onclick=reportToBot;
   if((b=$("#dprev"))) b.onclick=function(){ viewDay--; renderHome(); };
   if((b=$("#dnext"))) b.onclick=function(){ viewDay++; renderHome(); };
   if((b=$("#dtoday"))) b.onclick=function(){ viewDay=Math.max(0,Math.min(pi,n-1)); renderHome(); };
@@ -300,10 +333,11 @@ function finishRun(){
   if(st.c) h+='<div class="stat"><b>'+st.c+'</b><span>cards reviewed</span></div>';
   if(st.o+st.m) h+='<div class="stat"><b>'+(st.ook+st.mok)+'/'+(st.o+st.m)+'</b><span>drills solved</span></div>';
   if(st.s) h+='<div class="stat"><b>'+st.s+'</b><span>scenarios</span></div>';
-  h+='</div><div class="row" style="margin-top:14px"><button class="btn primary grow" id="again">Another round</button><button class="btn grow" id="home">Back</button></div></div>';
+  h+='</div><div class="row" style="margin-top:14px"><button class="btn primary grow" id="again">Another round</button><button class="btn grow" id="home">Back</button></div>'+(canReport()?'<button class="btn block" id="tellop2" style="margin-top:10px">Tell Opossum in the chat (closes the app)</button>':'')+'</div>';
   var name=run.name, items=run.items; main.innerHTML=h; setBack(null); title("Done"); chipStreak();
   $("#again").onclick=function(){ var t=tab; go(t); };
   $("#home").onclick=function(){ go("home"); };
+  if($("#tellop2")) $("#tellop2").onclick=reportToBot;
   run=null; flush();
 }
 function confSeg(){ var c=run.conf===undefined?S.conf:run.conf; return '<div class="row" style="align-items:center;gap:8px"><span class="muted">How sure are you?</span><div class="seg" id="seg"><button data-c="0" class="'+(c===0?"on":"")+'">Guess</button><button data-c="1" class="'+(c===1?"on":"")+'">Think so</button><button data-c="2" class="'+(c===2?"on":"")+'">Sure</button></div></div>'; }
