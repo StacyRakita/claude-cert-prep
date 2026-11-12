@@ -106,7 +106,7 @@ function wire(root){
   });
 }
 // ---------- views
-function setHeader(t,s,back){ document.getElementById("htitle").textContent=t; document.getElementById("hsub").textContent=s||""; var b=document.getElementById("back"); b.onclick=function(){ if(back==="app") location.href="index.html"; else location.hash=back; }; }
+function setHeader(t,s,back){ document.getElementById("htitle").textContent=t; document.getElementById("hsub").textContent=s||""; var b=document.getElementById("back"); b.onclick=function(){ if(back==="app") location.href="index.html"+((location.search.match(/[?&]v=([^&]+)/)||[])[1]?"?v="+location.search.match(/[?&]v=([^&]+)/)[1]:""); else location.hash=back; }; }
 function modProgress(m){ var n=m.lessons.length, d=m.lessons.filter(function(l){ return read[l.id]; }).length; return [d,n]; }
 function home(){
   setHeader(G.title,"Theory by module","app");

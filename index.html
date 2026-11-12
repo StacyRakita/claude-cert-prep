@@ -225,13 +225,14 @@ function sessionFor(idx){
   return items;
 }
 function describe(items){ var c={q:0,c:0,o:0,m:0,s:0}; items.forEach(function(i){ c[i.t]++; }); var out=[]; if(c.q) out.push(plural(c.q,"question")); if(c.c) out.push(plural(c.c,"card")); if(c.o+c.m) out.push(plural(c.o+c.m,"drill")); if(c.s) out.push(plural(c.s,"scenario")); return out.join(", "); }
-function guideLink(g){ var l=D.GL&&D.GL[g]; if(l) return '<a class="btn small" href="guide.html?from=app#/l/'+esc(l[0])+'">'+esc(l[1])+'</a>'; return '<a class="btn small" href="guide.html?from=app#'+esc(g)+'">'+esc(D.GROUPS[g]||g)+'</a>'; }
+function guideLink(g){ var l=D.GL&&D.GL[g]; if(l) return '<a class="btn small" href="guide.html?from=app&v='+VQ+'#/l/'+esc(l[0])+'">'+esc(l[1])+'</a>'; return '<a class="btn small" href="guide.html?from=app#'+esc(g)+'">'+esc(D.GROUPS[g]||g)+'</a>'; }
 function guideLinks(gs){ var seen={}, o=[]; gs.forEach(function(g){ var l=D.GL&&D.GL[g], k=l?l[0]:g; if(!seen[k]){ seen[k]=1; o.push(g); } }); return o.map(guideLink).join(""); }
 
 
 function readMap(){ try{ return JSON.parse(localStorage.getItem("cca_read2")||"{}"); }catch(e){ return {}; } }
 var LM={}; (D.GM||[]).forEach(function(m){ m.lessons.forEach(function(l){ LM[l.id]={mod:m,l:l}; }); });
-function lessonHref(id){ return "guide.html?from=app#/l/"+id; }
+var VQ=(location.search.match(/[?&]v=([^&]+)/)||[])[1]||String(Date.now()).slice(0,8);
+function lessonHref(id){ return "guide.html?from=app&v="+VQ+"#/l/"+id; }
 function readingList(gs){
   var seen={}, ids=[]; gs.forEach(function(g){ var l=D.GL&&D.GL[g]; if(l&&!seen[l[0]]){ seen[l[0]]=1; ids.push(l[0]); } });
   var rd=readMap(), mods=[], by={};
@@ -246,7 +247,7 @@ function renderLearn(){
     var n=m.lessons.length, d=m.lessons.filter(function(l){ return rd[l.id]; }).length;
     h+='<details class="card"'+(m.open?" open":"")+'><summary style="cursor:pointer;list-style:none"><b>'+esc(m.title)+'</b><div class="muted" style="margin-top:2px">'+esc(m.blurb||"")+'</div><div class="bar" style="margin-top:8px"><i style="width:'+Math.round(100*d/n)+'%"></i></div><div class="muted" style="margin-top:4px">'+d+' of '+n+' lessons read'+(m.minutes?' &middot; about '+m.minutes+' min':'')+'</div></summary><div style="margin-top:8px">'+m.lessons.map(function(l,i){ var ok=!!rd[l.id]; return '<a class="item" href="'+lessonHref(l.id)+'" style="text-decoration:none;color:inherit"><span>'+(i+1)+'. '+esc(l.title)+'</span><span class="muted" style="white-space:nowrap;margin-left:8px">'+(ok?"&#10003; read":l.minutes+" min")+'</span></a>'; }).join("")+'</div></details>';
   });
-  h+='<a class="btn block" href="guide.html?from=app" style="text-align:center;text-decoration:none;margin-top:4px">Open the guide with search</a>';
+  h+='<a class="btn block" href="guide.html?from=app&v='+VQ+'" style="text-align:center;text-decoration:none;margin-top:4px">Open the guide with search</a>';
   main.innerHTML=h;
 }
 if(D.GM&&D.GM.length){ var lt=document.getElementById("learnTab"); if(lt) lt.style.display=""; }
