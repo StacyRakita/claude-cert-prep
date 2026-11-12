@@ -1,10 +1,11 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{var _t=localStorage.getItem("cca_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t);}catch(e){}</script>
 <title>__TITLE__</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{--bg:#f6f4ef;--surface:#fff;--surface2:#efece4;--border:#ded8c9;--text:#1b2028;--muted:#66707c;--accent:#b3620a;--accent-ink:#fff;--teal:#0d7d72;--ok:#1c7c4c;--ok-bg:#e3f3e9;--bad:#b3261e;--bad-bg:#fbe6e4;--warn-bg:#fdf1dc;--warn-b:#e8c98b;--code:#f0ece2;--shadow:0 1px 2px rgba(20,20,10,.06),0 8px 24px -14px rgba(20,20,10,.18)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1116;--surface:#161b22;--surface2:#1c222b;--border:#2b3340;--text:#e8ecf1;--muted:#8b95a3;--accent:#e2a33d;--accent-ink:#1b1300;--teal:#3fc7b8;--ok:#4fce88;--ok-bg:#123322;--bad:#ff7a70;--bad-bg:#3a1512;--warn-bg:#2a2112;--warn-b:#5a4721;--code:#222a35;--shadow:0 1px 2px rgba(0,0,0,.3),0 12px 30px -16px rgba(0,0,0,.6)}}
+:root[data-theme="dark"]{--bg:#0e1116;--surface:#161b22;--surface2:#1c222b;--border:#2b3340;--text:#e8ecf1;--muted:#8b95a3;--accent:#e2a33d;--accent-ink:#1b1300;--teal:#3fc7b8;--ok:#4fce88;--ok-bg:#123322;--bad:#ff7a70;--bad-bg:#3a1512;--warn-bg:#2a2112;--warn-b:#5a4721;--code:#222a35;--shadow:0 1px 2px rgba(0,0,0,.3),0 12px 30px -16px rgba(0,0,0,.6)}
 *{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
 a{color:var(--accent)}
@@ -149,5 +150,5 @@ window.addEventListener("hashchange",route); route();
 if(tgw){ try{ tgw.ready(); tgw.expand(); }catch(e){} }
 if(CS){ CS.getItem(CSK,function(err,v){ if(err||!v) return; try{ var c=JSON.parse(v); Object.keys(c).forEach(function(k){ if(c[k]) read[k]=true; }); try{ localStorage.setItem(READ_KEY,JSON.stringify(read)); }catch(e){} route(); }catch(e){} }); }
 })();
-</script><script>(function(){var BUILD="1794502319",B=BUILD;try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){var m=t.match(/var BUILD="(\d+)"/);if(m&&m[1]!==B&&location.search.indexOf("b="+m[1])<0){var q=location.search.replace(/^\?/,"").replace(/(^|&)b=\d+/,"").replace(/^&/,"");location.replace(location.pathname+"?"+(q?q+"&":"")+"b="+m[1]+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+</script><script>(function(){var BUILD="1794503104",B=BUILD;try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){var m=t.match(/var BUILD="(\d+)"/);if(m&&m[1]!==B&&location.search.indexOf("b="+m[1])<0){var q=location.search.replace(/^\?/,"").replace(/(^|&)b=\d+/,"").replace(/^&/,"");location.replace(location.pathname+"?"+(q?q+"&":"")+"b="+m[1]+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 </body></html>

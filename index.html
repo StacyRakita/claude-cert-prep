@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{var _t=localStorage.getItem("cca_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t);}catch(e){}</script>
 <title>Claude Dev Prep</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -488,6 +488,9 @@ function finishExam(){
 }
 
 // ---------- progress
+var WEBURL={claude:"https://stacyrakita.github.io/claude-cert-prep/",aws:"https://stacyrakita.github.io/aws-dva-prep/"};
+function themeMode(){ try{ var t=localStorage.getItem("cca_theme"); return t==="light"||t==="dark"?t:"auto"; }catch(e){ return "auto"; } }
+function setTheme(m){ try{ if(m==="auto"){ localStorage.removeItem("cca_theme"); document.documentElement.removeAttribute("data-theme"); } else { localStorage.setItem("cca_theme",m); document.documentElement.setAttribute("data-theme",m); } }catch(e){} }
 function renderProgress(){
   title("Progress"); chipStreak();
   var rd=readiness(), t=today(), h='<div class="card"><h2>Readiness</h2><div class="grid3" style="margin-top:8px"><div class="stat"><b>'+(rd===null?"-":rd+"%")+'</b><span>Recent accuracy</span></div><div class="stat"><b>'+streak()+'</b><span>Day streak</span></div><div class="stat"><b>'+Math.min(S.ses||0,D.PLAN.length)+'/'+D.PLAN.length+'</b><span>Plan days done</span></div></div><div class="muted" style="margin-top:8px">'+(rd===null?"Answer at least 10 questions to see this.":(rd>=80?"You are in good shape. Keep reviewing to hold it.":(rd>=D.EXAM.pass?"Close to the pass mark. Focus on weak topics.":"Below the pass mark. Use Mistakes and Weak topics every day.")))+'</div></div>';
@@ -499,9 +502,13 @@ function renderProgress(){
   var wt=weakTopics(); h+='<div class="card"><h3>Weak topics</h3>'+(wt.length?wt.map(function(x){ return '<span class="tag bad" style="margin-right:6px">'+esc(label(x))+'</span>'; }).join(""):'<div class="muted">None yet.</div>')+'</div>';
   var mk=mistakes(); h+='<div class="card"><h3>Mistake notebook ('+mk.length+')</h3>'+(mk.length?mk.slice(0,12).map(function(q){ return '<div class="item" style="cursor:default"><span>'+fmt(q.q.length>110?q.q.slice(0,110)+"...":q.q)+'<small>'+esc(topicQ(q))+'</small></span></div>'; }).join("")+'<button class="btn primary block" data-act="mistakes" style="margin-top:10px">Practice mistakes</button>':'<div class="muted">No open mistakes.</div>')+'</div>';
   if(S.exams.length){ h+='<div class="card"><h3>Exams</h3>'+S.exams.slice(-6).reverse().map(function(e){ return '<div class="item" style="cursor:default"><span>'+new Date(e.t).toLocaleDateString("en-GB")+'</span><span class="tag '+(e.pct>=D.EXAM.pass?"ok":"bad")+'">'+e.pct+'%</span></div>'; }).join("")+'</div>'; }
+  if(CS){ var wu=WEBURL[D.TRACK]||WEBURL.claude; h+='<div class="card"><h3>Web version</h3><div class="muted">The same trainer opens in a normal browser, handy on a laptop. <b>Progress is not shared</b> between Telegram and the browser: answers, cards and streak stay where you studied, and Carl only hears about days marked in Telegram.</div><button class="btn small" id="openWeb" style="margin-top:8px">Open in browser</button></div>'; }
+  h+='<div class="card"><h3>Appearance</h3><div class="muted">Auto follows your phone or computer. The choice is saved on this device.</div><div class="row" id="themeRow" style="margin-top:8px">'+["auto","light","dark"].map(function(m){ return '<button class="btn small grow'+(themeMode()===m?" primary":"")+'" data-theme-set="'+m+'">'+m.charAt(0).toUpperCase()+m.slice(1)+'</button>'; }).join("")+'</div></div>';
   h+='<div class="card"><h3>Data</h3><div class="muted">Progress is saved on this device and, inside Telegram, synced through your Telegram account.</div><button class="btn small" id="reset" style="margin-top:8px">Reset all progress</button></div>';
   main.innerHTML=h;
   main.querySelectorAll("[data-act]").forEach(function(x){ x.onclick=function(){ action(x.dataset.act); }; });
+  var ow=$("#openWeb"); if(ow) ow.onclick=function(){ var u=WEBURL[D.TRACK]||WEBURL.claude; try{ tg.openLink(u); }catch(e){ window.open(u,"_blank"); } };
+  document.querySelectorAll("[data-theme-set]").forEach(function(b){ b.onclick=function(){ setTheme(b.dataset.themeSet); renderProgress(); }; });
   $("#reset").onclick=function(){ if(confirm("Delete all progress on this device (and in Telegram sync)?")){ S=blank(); flush(); go("progress"); } };
 }
 
@@ -512,5 +519,5 @@ window.addEventListener("beforeunload",function(){ try{ localStorage.setItem(KEY
 window.__dva={S:function(){ return S; },QBY:QBY};
 go("home");
 })();
-</script><script>(function(){var BUILD="1794502319",B=BUILD;try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){var m=t.match(/var BUILD="(\d+)"/);if(m&&m[1]!==B&&location.search.indexOf("b="+m[1])<0){var q=location.search.replace(/^\?/,"").replace(/(^|&)b=\d+/,"").replace(/^&/,"");location.replace(location.pathname+"?"+(q?q+"&":"")+"b="+m[1]+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+</script><script>(function(){var BUILD="1794503104",B=BUILD;try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){var m=t.match(/var BUILD="(\d+)"/);if(m&&m[1]!==B&&location.search.indexOf("b="+m[1])<0){var q=location.search.replace(/^\?/,"").replace(/(^|&)b=\d+/,"").replace(/^&/,"");location.replace(location.pathname+"?"+(q?q+"&":"")+"b="+m[1]+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 </body></html>
