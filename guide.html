@@ -59,7 +59,9 @@ var READ_KEY = G.readKey||"cca_read2", CSK = G.cloudKey||"read2", read={}, main=
 try{ read=JSON.parse(localStorage.getItem(READ_KEY)||"{}"); }catch(e){}
 function save(){ try{ localStorage.setItem(READ_KEY,JSON.stringify(read)); }catch(e){} if(CS){ CS.setItem(CSK,JSON.stringify(read),function(){}); } }
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function md(s){ return esc(s).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/`([^`]+)`/g,"<code>$1</code>").replace(/_([^_]+)_/g,"<i>$1</i>"); }
+function md(s){ var codes=[]; var t=esc(s).replace(/`([^`]+)`/g,function(m,c){ codes.push(c); return "\u0000"+(codes.length-1)+"\u0000"; });
+  t=t.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/(^|[^A-Za-z0-9_])_([^_\s][^_]*)_(?![A-Za-z0-9_])/g,"$1<i>$2</i>");
+  return t.replace(/\u0000(\d+)\u0000/g,function(m,i){ return "<code>"+codes[+i]+"</code>"; }); }
 function norm(bs){ (bs||[]).forEach(function(b){ (b.items||[]).forEach(function(it){ if(it&&typeof it==="object"&&typeof it.body==="string") it.body=[{t:"p",x:it.body}]; if(it&&it.body) norm(it.body); }); if(Array.isArray(b.body)) norm(b.body); }); }
 G.modules.forEach(function(m){ m.lessons.forEach(function(l){ norm(l.blocks); }); });
 var LES={}, ORDER=[], BYGROUP={};
