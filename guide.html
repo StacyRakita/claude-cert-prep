@@ -251,5 +251,5 @@ TTS.init(); window.addEventListener("hashchange",route); route();
 if(tgw){ try{ tgw.ready(); tgw.expand(); }catch(e){} }
 if(CS){ CS.getItem(CSK,function(err,v){ if(err||!v) return; try{ var c=JSON.parse(v); Object.keys(c).forEach(function(k){ if(c[k]) read[k]=true; }); try{ localStorage.setItem(READ_KEY,JSON.stringify(read)); }catch(e){} route(); }catch(e){} }); }
 })();
-</script><script>(function(){var BUILD="1794676106",B=BUILD;try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){var m=t.match(/var BUILD="(\d+)"/);if(m&&m[1]!==B&&location.search.indexOf("b="+m[1])<0){var q=location.search.replace(/^\?/,"").replace(/(^|&)b=\d+/,"").replace(/^&/,"");location.replace(location.pathname+"?"+(q?q+"&":"")+"b="+m[1]+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+</script><script>(function(){var BUILD="1794681729",B=BUILD;try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){var m=t.match(/var BUILD="(\d+)"/);if(m&&m[1]!==B&&location.search.indexOf("b="+m[1])<0){var q=location.search.replace(/^\?/,"").replace(/(^|&)b=\d+/,"").replace(/^&/,"");location.replace(location.pathname+"?"+(q?q+"&":"")+"b="+m[1]+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 </body></html>
